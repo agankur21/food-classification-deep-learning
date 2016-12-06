@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 model_type=$1
 current_dir=`pwd`
 parent_dir=`dirname $current_dir`
