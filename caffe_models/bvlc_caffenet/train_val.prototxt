@@ -270,7 +270,7 @@ layer {
     decay_mult: 1
   }
   param {
-    lr_mult: 20
+    lr_mult: 200
     decay_mult: 0
   }
   inner_product_param {
@@ -310,7 +310,7 @@ layer {
     decay_mult: 1
   }
   param {
-    lr_mult: 20
+    lr_mult: 200
     decay_mult: 0
   }
   inner_product_param {
@@ -350,7 +350,7 @@ layer {
     decay_mult: 1
   }
   param {
-    lr_mult: 20
+    lr_mult: 200
     decay_mult: 0
   }
   inner_product_param {
