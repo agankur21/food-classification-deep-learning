@@ -266,11 +266,11 @@ layer {
   bottom: "pool5"
   top: "fc6-food"
   param {
-    lr_mult: 10
+    lr_mult: 100
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 20
     decay_mult: 0
   }
   inner_product_param {
@@ -306,11 +306,11 @@ layer {
   bottom: "fc6-food"
   top: "fc7-food"
   param {
-    lr_mult: 10
+    lr_mult: 100
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 20
     decay_mult: 0
   }
   inner_product_param {
@@ -346,11 +346,11 @@ layer {
   bottom: "fc7-food"
   top: "fc8-food"
   param {
-    lr_mult: 10
+    lr_mult: 100
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 20
     decay_mult: 0
   }
   inner_product_param {
