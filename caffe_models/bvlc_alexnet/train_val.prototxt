@@ -1,4 +1,7 @@
 name: "AlexNet"
+state {
+  phase: TRAIN
+}
 layer {
   name: "data"
   type: "Data"
@@ -15,25 +18,6 @@ layer {
   data_param {
     source: "/mnt/data/train_all_lmdb"
     batch_size: 128
-    backend: LMDB
-  }
-}
-layer {
-  name: "data"
-  type: "Data"
-  top: "data"
-  top: "label"
-  include {
-    phase: TEST
-  }
-  transform_param {
-    mirror: false
-    crop_size: 227
-    mean_file: "/mnt/data/mean_all.binaryproto"
-  }
-  data_param {
-    source: "/mnt/data/test_all_lmdb"
-    batch_size: 50
     backend: LMDB
   }
 }
@@ -301,16 +285,16 @@ layer {
   }
 }
 layer {
-  name: "fc7"
+  name: "fc7-food"
   type: "InnerProduct"
   bottom: "fc6"
-  top: "fc7"
+  top: "fc7-food"
   param {
-    lr_mult: 1
+    lr_mult: 100
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 100
     decay_mult: 0
   }
   inner_product_param {
@@ -328,14 +312,14 @@ layer {
 layer {
   name: "relu7"
   type: "ReLU"
-  bottom: "fc7"
-  top: "fc7"
+  bottom: "fc7-food"
+  top: "fc7-food"
 }
 layer {
   name: "drop7"
   type: "Dropout"
-  bottom: "fc7"
-  top: "fc7"
+  bottom: "fc7-food"
+  top: "fc7-food"
   dropout_param {
     dropout_ratio: 0.5
   }
@@ -343,7 +327,7 @@ layer {
 layer {
   name: "fc8-food"
   type: "InnerProduct"
-  bottom: "fc7"
+  bottom: "fc7-food"
   top: "fc8-food"
   param {
     lr_mult: 100
@@ -363,16 +347,6 @@ layer {
       type: "constant"
       value: 0
     }
-  }
-}
-layer {
-  name: "accuracy"
-  type: "Accuracy"
-  bottom: "fc8-food"
-  bottom: "label"
-  top: "accuracy"
-  include {
-    phase: TEST
   }
 }
 layer {
