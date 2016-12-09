@@ -5,7 +5,7 @@ import numpy as np
 
 input_image_folder = "/mnt/data/train"
 output_file = '/mnt/data/f7_features.txt'
-model_file = '/home/ubuntu/caffe/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel'
+model_file = '/mnt/data/bvlc_caffenet/bvlc_caffenet_iter_2000.caffemodel'
 deploy_prototxt = '/home/ubuntu/git-repo/food-classification-deep-learning/caffe_models/bvlc_caffenet/deploy.prototxt'
 imagemean_file = '/mnt/data/mean_all.binaryproto'
 net = caffe.Net(deploy_prototxt, model_file, caffe.TEST)
