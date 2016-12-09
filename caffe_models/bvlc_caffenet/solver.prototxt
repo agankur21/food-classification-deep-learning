@@ -8,7 +8,7 @@ lr_policy: "step"
 gamma: 0.1
 #momentum: 0.9
 weight_decay: 0.0005
-stepsize: 2000
+stepsize: 4000
 snapshot: 2000
 snapshot_prefix: "/mnt/data/bvlc_caffenet/bvlc_caffenet"
 solver_mode: GPU
