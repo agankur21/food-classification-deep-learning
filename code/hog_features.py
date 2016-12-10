@@ -93,7 +93,7 @@ Y = []
 count = 0
 for imgname in data_dictionary:
     img = misc.imread(imgname)
-    if X == None:
+    if X is None:
         X = hog_feature(img)
     else:
         X = np.vstack((X, hog_feature(img)))
