@@ -46,10 +46,12 @@ def save_image_features(image_file, image_folder):
     if os.path.isfile(complete_input_image_path) is False:
         print "Incorrect path : " + complete_input_image_path
         return
+    print "Processing file: " + complete_input_image_path
     img = caffe.io.load_image(complete_input_image_path)
     net.blobs['data'].data[...] = transformer.preprocess('data', img)
     output = net.forward()
     output_dict[image_file] = net.blobs[layer].data[0]
+    print "Features for file: %s added to dictionary" %complete_input_image_path
 
 if __name__ == '__main__':
     save_features_for_all_files()
