@@ -43,7 +43,7 @@ def save_features_for_all_files():
         out_file.close()
 
 
-def save_image_features(image_file, image_folder, out_file,processed_files):
+def save_image_features(image_file, image_folder, out_file):
     complete_input_image_path = os.path.join(image_folder, image_file)
     if os.path.isfile(complete_input_image_path) is False:
         print "Incorrect path : " + complete_input_image_path
