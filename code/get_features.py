@@ -3,7 +3,7 @@ import os
 import caffe
 import numpy as np
 
-model_file = '/mnt/data/bvlc_caffenet/bvlc_caffenet_iter_2000.caffemodel'
+model_file = '/mnt/data/Training_Snapshot/snapshot1/bvlc_caffenet_iter_10000.caffemodel'
 deploy_prototxt = '/home/ubuntu/git-repo/food-classification-deep-learning/caffe_models/bvlc_caffenet/deploy.prototxt'
 imagemean_file = '/mnt/data/mean_all.npy'
 net = caffe.Net(deploy_prototxt, model_file, caffe.TEST)
@@ -42,7 +42,7 @@ def save_features_for_all_files(input_image_folder,output_file):
             print "File Processed : "+ os.path.join(input_image_folder,img_file)
             count_files += 1
             if count_files %100 == 0:
-                print "Number of Files Processed : " + count_files
+                print "Number of Files Processed : " + str(count_files)
 
     except Exception as e:
         print e.message
@@ -58,7 +58,7 @@ def save_image_features(image_file, image_folder, out_file):
     img = caffe.io.load_image(complete_input_image_path)
     net.blobs['data'].data[...] = transformer.preprocess('data', img)
     output = net.forward()
-    feature = ",".join((net.blobs[layer].data[0][np.newaxis, :]).astype('str'))
+    feature = ",".join((net.blobs[layer].data[0][np.newaxis, :]).astype('str')[0])
     out_file.write(image_file + ',' + feature + '\n')
 
 
