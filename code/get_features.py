@@ -9,7 +9,7 @@ model_file = '/mnt/data/bvlc_caffenet/bvlc_caffenet_iter_2000.caffemodel'
 deploy_prototxt = '/home/ubuntu/git-repo/food-classification-deep-learning/caffe_models/bvlc_caffenet/deploy.prototxt'
 imagemean_file = '/mnt/data/mean_all.binaryproto'
 net = caffe.Net(deploy_prototxt, model_file, caffe.TEST)
-layer = 'fc7'
+layer = 'fc7-food'
 if layer not in net.blobs:
     raise TypeError("Invalid layer name: " + layer)
 print net.blobs['data'].data.shape
