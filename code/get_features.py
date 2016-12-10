@@ -36,7 +36,7 @@ def save_features_for_all_files():
         for img_file in list_img_files:
             if img_file in processed_files:
                 continue
-            save_features_for_all_files(img_file, input_image_folder, out_file)
+            save_image_features(img_file, input_image_folder, out_file)
     except Exception as e:
         print e.message
     finally:
