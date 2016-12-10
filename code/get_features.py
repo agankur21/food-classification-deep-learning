@@ -53,3 +53,6 @@ def save_image_features(image_file, image_folder, out_file,processed_files):
     output = net.forward()
     feature = ",".join((net.blobs[layer].data[0][np.newaxis, :]).astype('str'))
     out_file.write(image_file + '\t' + feature + '\n')
+
+if __name__ == '__main__':
+    save_features_for_all_files()
