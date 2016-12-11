@@ -5,6 +5,7 @@ from sklearn import svm
 from sklearn.cross_validation import train_test_split
 import cPickle
 from scipy import misc
+import os
 
 def rgb2gray(rgb):
     """Convert RGB image to grayscale
@@ -72,49 +73,45 @@ def hog_feature(im):
 
     return orientation_histogram.ravel()
 
-f1 = open('/mnt/data/train_data.txt', 'rb')
-data_dictionary = {}
-class_count = {}
-lines = f1.readlines()
-f1.close()
-for l in lines:
-    l = l.replace('\n', '')
-    imgname, label = l.split(' ')
-    imgname = '/mnt/data/train/' + imgname
-    if label not in class_count:
-        class_count[label] = 1
-    elif class_count[label] >= 100:
-        continue
-    else:
-        class_count[label] += 1
-    data_dictionary[imgname] = int(label)
-X = None
-Y = []
-count = 0
-for imgname in data_dictionary:
-    img = misc.imread(imgname)
-    if X is None:
-        X = hog_feature(img)
-    else:
-        X = np.vstack((X, hog_feature(img)))
-    Y.append(data_dictionary[imgname])
-    if count % 1000 == 0:
-        print count
-    count += 1
 
-Y = np.array(Y)
-print X.shape, Y.shape
-f_voc = open('/mnt/data/hog.save', 'wb')
-cPickle.dump((X, Y), f_voc, protocol=cPickle.HIGHEST_PROTOCOL)
-f_voc.close()
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
 
-print X_train.shape, y_train.shape
-print X_test.shape, y_test.shape
 
-clf = svm.SVC(kernel='linear', C=1).fit(X_train, y_train)
+def get_files_processed(output_file):
+    if os.path.isfile(output_file) is False:
+        return set([])
+    lines = open(output_file, 'r').read().splitlines()
+    files = set([line.split(',')[0] for line in lines])
+    return files
 
-clf.score(X_test, y_test)
+
+def calculate_save_hog_features(image_dir,output_file_path):
+    list_img_files = os.listdir(image_dir)
+    processed_files = get_files_processed(output_file_path)
+    out_file = open(output_file_path, mode='a')
+    try:
+        count_files=0
+        for img_file in list_img_files:
+            if img_file in processed_files:
+                continue
+            complete_img_path = os.path.join(image_dir,img_file)
+            img = misc.imread(complete_img_path)
+            features = hog_feature(img)
+            feature_str = ",".join((features[np.newaxis,:]).astype('str')[0])
+            out_file.write(img_file + ',' + feature_str + '\n')
+            print "File Processed : " + os.path.join(image_dir, img_file)
+            count_files += 1
+            if count_files % 100 == 0:
+                print "Number of Files Processed : " + str(count_files)
+    except Exception as e:
+        print e.message
+    finally:
+        out_file.close()
+
+
+if __name__ == '__main__':
+    calculate_save_hog_features("/mnt/data/train", '/mnt/data/hog_features_train.txt')
+    calculate_save_hog_features("/mnt/data/test", '/mnt/data/hog_features_test.txt')
+
 
 
 
