@@ -67,7 +67,7 @@ def get_top_arguments(numpy_array,num_arguments=5):
     return sorted_arguments
 
 
-def save_image_features(image_file, image_folder, dict):
+def save_image_features(image_file, image_folder):
     complete_input_image_path = os.path.join(image_folder, image_file)
     if os.path.isfile(complete_input_image_path) is False:
         print "Incorrect path : " + complete_input_image_path
@@ -80,5 +80,5 @@ def save_image_features(image_file, image_folder, dict):
 
 if __name__ == '__main__':
     label_file = '/mnt/data/train_data.txt'
-    save_features_for_all_files("/mnt/data/train",'/mnt/data/f7_features_train.p')
-    save_features_for_all_files("/mnt/data/test",'/mnt/data/f7_features_test.p')
+    save_features_for_all_files("/mnt/data/train",label_file,'/mnt/data/f7_features_train.p')
+    save_features_for_all_files("/mnt/data/test",label_file,'/mnt/data/f7_features_test.p')
