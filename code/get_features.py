@@ -42,6 +42,7 @@ def save_features_for_all_files(input_image_folder,label_file,output_file):
     out_file = open(output_file, mode='wb')
     X =[]
     y=[]
+    image_files=[]
     try:
         count_files= 0
         for img_file in list_img_files:
@@ -49,6 +50,7 @@ def save_features_for_all_files(input_image_folder,label_file,output_file):
                 continue
             X.append(save_image_features(img_file, input_image_folder))
             y.append(labels_dict[img_file])
+            image_files.append(img_file)
             print "File Processed : "+ os.path.join(input_image_folder,img_file)
             count_files += 1
             if count_files %100 == 0:
@@ -58,7 +60,7 @@ def save_features_for_all_files(input_image_folder,label_file,output_file):
         print e.message
     finally:
 
-        cPickle.dump((np.array(X),np.array(y)), out_file, protocol=cPickle.HIGHEST_PROTOCOL)
+        cPickle.dump((np.array(X),np.array(y),np.array(image_files)), out_file, protocol=cPickle.HIGHEST_PROTOCOL)
         out_file.close()
 
 
