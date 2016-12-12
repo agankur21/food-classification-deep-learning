@@ -2,10 +2,13 @@ import os
 
 import caffe
 import numpy as np
+import cPickle
 
-model_file = '/mnt/data/Training_Snapshot/snapshot1/bvlc_caffenet_iter_10000.caffemodel'
-deploy_prototxt = '/home/ubuntu/git-repo/food-classification-deep-learning/caffe_models/bvlc_caffenet/deploy.prototxt'
+model_file = '/mnt/data/Training_Snapshot/snapshot5/bvlc_caffenet_iter_8000.caffemodel'
+deploy_prototxt = '/mnt/data/Training_Snapshot/snapshot5/deploy.prototxt'
 imagemean_file = '/mnt/data/mean_all.npy'
+
+
 net = caffe.Net(deploy_prototxt, model_file, caffe.TEST)
 layer = 'fc7-food'
 if layer not in net.blobs:
@@ -20,6 +23,11 @@ transformer.set_raw_scale('data', 255.0)
 net.blobs['data'].reshape(1, 3, 227, 227)
 
 
+def get_label_dict(label_file):
+    lines= open(label_file).read().splitlines()
+    dict_labels={ x.split(' ')[0].strip() : x.split(' ')[1].strip() for x in lines}
+    return dict_labels
+
 def get_files_processed(output_file):
     if os.path.isfile(output_file) is False:
         return set([])
@@ -28,17 +36,19 @@ def get_files_processed(output_file):
     return files
 
 
-def save_features_for_all_files(input_image_folder,output_file):
+def save_features_for_all_files(input_image_folder,label_file,output_file):
+    labels_dict=get_label_dict(label_file)
     list_img_files = os.listdir(input_image_folder)
-    processed_files = get_files_processed(output_file)
-    out_file = open(output_file, mode='a')
+    out_file = open(output_file, mode='wb')
+    X =[]
+    y=[]
     try:
         count_files= 0
-        total_files=len(list_img_files)
         for img_file in list_img_files:
-            if img_file in processed_files:
+            if img_file not in labels_dict:
                 continue
-            save_image_features(img_file, input_image_folder, out_file)
+            X.append(save_image_features(img_file, input_image_folder))
+            y.append(labels_dict[img_file])
             print "File Processed : "+ os.path.join(input_image_folder,img_file)
             count_files += 1
             if count_files %100 == 0:
@@ -47,10 +57,17 @@ def save_features_for_all_files(input_image_folder,output_file):
     except Exception as e:
         print e.message
     finally:
+
+        cPickle.dump((np.array(X),np.array(y)), out_file, protocol=cPickle.HIGHEST_PROTOCOL)
         out_file.close()
 
 
-def save_image_features(image_file, image_folder, out_file):
+def get_top_arguments(numpy_array,num_arguments=5):
+    sorted_arguments= np.argsort(numpy_array)[-num_arguments:][::-1]
+    return sorted_arguments
+
+
+def save_image_features(image_file, image_folder, dict):
     complete_input_image_path = os.path.join(image_folder, image_file)
     if os.path.isfile(complete_input_image_path) is False:
         print "Incorrect path : " + complete_input_image_path
@@ -58,10 +75,10 @@ def save_image_features(image_file, image_folder, out_file):
     img = caffe.io.load_image(complete_input_image_path)
     net.blobs['data'].data[...] = transformer.preprocess('data', img)
     output = net.forward()
-    feature = ",".join((net.blobs[layer].data[0][np.newaxis, :]).astype('str')[0])
-    out_file.write(image_file + ',' + feature + '\n')
+    return net.blobs[layer].data[0]
 
 
 if __name__ == '__main__':
-    save_features_for_all_files("/mnt/data/train",'/mnt/data/f7_features_train.txt')
-    save_features_for_all_files("/mnt/data/test",'/mnt/data/f7_features_test.txt')
+    label_file = '/mnt/data/train_data.txt'
+    save_features_for_all_files("/mnt/data/train",'/mnt/data/f7_features_train.p')
+    save_features_for_all_files("/mnt/data/test",'/mnt/data/f7_features_test.p')
