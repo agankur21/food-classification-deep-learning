@@ -38,7 +38,7 @@ def save_features_for_all_files(input_image_folder,label_file,output_file):
     labels_dict=get_label_dict(label_file)
     list_img_files = os.listdir(input_image_folder)
     out_file = open(output_file, mode='wb')
-    X =np.zeros(len(list_img_files),num_features_out)
+    X =np.zeros((len(list_img_files),num_features_out))
     y=[]
     image_files=[]
     try:
