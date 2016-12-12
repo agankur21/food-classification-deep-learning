@@ -8,7 +8,6 @@ model_file = '/mnt/data/Training_Snapshot/snapshot5/bvlc_caffenet_iter_8000.caff
 deploy_prototxt = '/mnt/data/Training_Snapshot/snapshot5/deploy.prototxt'
 imagemean_file = '/mnt/data/mean_all.npy'
 
-
 net = caffe.Net(deploy_prototxt, model_file, caffe.TEST)
 layer = 'fc7-food'
 if layer not in net.blobs:
@@ -19,9 +18,8 @@ transformer.set_mean('data', np.load(imagemean_file).mean(1).mean(1))
 transformer.set_transpose('data', (2, 0, 1))
 transformer.set_channel_swap('data', (2, 1, 0))
 transformer.set_raw_scale('data', 255.0)
-
 net.blobs['data'].reshape(1, 3, 227, 227)
-
+num_features_out=net.blobs[layer].data.shape[1]
 
 def get_label_dict(label_file):
     lines= open(label_file).read().splitlines()
@@ -40,7 +38,7 @@ def save_features_for_all_files(input_image_folder,label_file,output_file):
     labels_dict=get_label_dict(label_file)
     list_img_files = os.listdir(input_image_folder)
     out_file = open(output_file, mode='wb')
-    X =[]
+    X =np.zeros(len(list_img_files),num_features_out)
     y=[]
     image_files=[]
     try:
@@ -48,7 +46,8 @@ def save_features_for_all_files(input_image_folder,label_file,output_file):
         for img_file in list_img_files:
             if img_file not in labels_dict:
                 continue
-            X.append(save_image_features(img_file, input_image_folder))
+            image_features= get_image_features(img_file, input_image_folder)
+            np.copyto(X[count_files,:],image_features)
             y.append(labels_dict[img_file])
             image_files.append(img_file)
             print "File Processed : "+ os.path.join(input_image_folder,img_file)
@@ -59,8 +58,7 @@ def save_features_for_all_files(input_image_folder,label_file,output_file):
     except Exception as e:
         print e.message
     finally:
-
-        cPickle.dump((np.array(X),np.array(y),np.array(image_files)), out_file, protocol=cPickle.HIGHEST_PROTOCOL)
+        cPickle.dump((X,np.array(y),np.array(image_files)), out_file, protocol=cPickle.HIGHEST_PROTOCOL)
         out_file.close()
 
 
@@ -69,7 +67,7 @@ def get_top_arguments(numpy_array,num_arguments=5):
     return sorted_arguments
 
 
-def save_image_features(image_file, image_folder):
+def get_image_features(image_file, image_folder):
     complete_input_image_path = os.path.join(image_folder, image_file)
     if os.path.isfile(complete_input_image_path) is False:
         print "Incorrect path : " + complete_input_image_path
