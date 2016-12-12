@@ -83,4 +83,5 @@ def save_image_features(image_file, image_folder):
 if __name__ == '__main__':
     label_file = '/mnt/data/train_data.txt'
     save_features_for_all_files("/mnt/data/train",label_file,'/mnt/data/f7_features_train.p')
+    label_file = '/mnt/data/test_data.txt'
     save_features_for_all_files("/mnt/data/test",label_file,'/mnt/data/f7_features_test.p')
